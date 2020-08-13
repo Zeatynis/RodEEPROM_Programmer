@@ -170,8 +170,6 @@ void _RodEEPROM_ClearEEPROM()
 		printf(" %4.4x ", address);
 	}
 	PORTD &= ~(1<<PD7);
-
-	puts("\nCleared EEPROM!\n\n");
 }
 
 //Returns uint64_t MAX if succsseful
@@ -236,5 +234,4 @@ void _RodEEPROM_ReadEEPROM()
 
 	}
 	PORTD &= ~(1<<PD7);
-	puts("\nEEPROM has been read!\n\n");
 }

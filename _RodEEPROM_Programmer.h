@@ -7,6 +7,7 @@
 #include "_SteveUART_debug.h"
 
 /*	
+	EEPROM pins, to micrcontroller pins
 			VCC
 	PB0		PA0
 	PB1		PA1

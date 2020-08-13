@@ -37,21 +37,23 @@ void _RodEEPROM_CommandExecute(char* commandToExecute)
 	if(!_RodEEPROM_CheckString(commandToExecute, "clear"))
 	{
 		_RodEEPROM_ClearEEPROM();
+		puts("\n\nCleared EEPROM!\n");
 		uint64_t temp = _RodEEPROM_ClearCheck();
 
 		if(temp != 0xffffffffffffffff)
 		{
-			printf("\nError! at address: 0x%4.4x\n", temp);
-			printf("Byte: 0x%2.2x\n\n", _RodEEPROM_ReadByte(temp));
+			printf("\n\nError! at address: 0x%4.4x\n", temp);
+			printf("Byte: 0x%2.2x\n", _RodEEPROM_ReadByte(temp));
 		}
 		else
-			puts("\nWorked!\n");
+			puts("\n\nWorked!\n");
 
 		getchar();
 	}
 	else if(!_RodEEPROM_CheckString(commandToExecute, "train!"))
 	{
 		puts("\n                 _-====-__-======-__-========-_____-============-__\n               _(                                                 _)\n            OO(           _/_ _  _  _/_   _/_ _  _  _/_           )_\n           0  (_          (__(_)(_) (__   (__(_)(_) (__            _)\n         o0     (_                                                _)\n        o         \'=-___-===-_____-========-___________-===-dwb-=\'\n      .o                                _________\n     . ______          ______________  |         |      _____\n   _()_||__|| ________ |            |  |_________|   __||___||__\n  (BNSF 1995| |      | |            | __Y______00_| |_         _| \n/-OO----OO\"\"=\"OO--OO\"=\"OO--------OO\"=\"OO-------OO\"=\"OO-------OO\"=P\n#####################################################################\n");
+		getchar();
 	}
 	else if(!_RodEEPROM_CheckString(commandToExecute, "debug!"))
 	{
@@ -69,11 +71,13 @@ void _RodEEPROM_CommandExecute(char* commandToExecute)
 	else if(!_RodEEPROM_CheckString(commandToExecute, "read"))
 	{
 		_RodEEPROM_ReadEEPROM();
+		puts("\n\nEEPROM has been read!\n");
 		getchar();
 	}
 	else
 	{
 		puts("Invalid Command!!!\n\n");
+		getchar();
 	}
 
 	_RodEEPROM_ClearScreen();

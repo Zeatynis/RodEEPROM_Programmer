@@ -1,32 +1,12 @@
 Rod's EEPROM Programmer, with Atmel microcontroller (Atmega 164, 324, 644, 1284)
 
-V1.0.0
+V1.0.1
 
 	COMMAND LINE INTERFACE:
-	- Established Serial communication with a computer using the UART protocol
-		- Steve Gunn's (a lecturer of mine) source code used for UART serial communcation
-	- Displaying Main Menu on terminal
-	- ClearScreen and CheckString functions made
-	- CommandExecute function made, to execute a specific function based on an input string
-	- ProcessInput function made, to process keyboard inputs from a serial connection to the computer
-	- Allowed for user to type in command, and store the command in a string
-	- Implemented support for special keyboard functions like DEL and arrow keys
-	- Pressing enter will execute a command
+	- 
 
 	DEBUG:
-	- Debug mode implemented, can be entered and exited, by using the command 'debug!'
-	- Displays the numeric value of a character read
-	- Displays the curent contents in the command string by sending the '`' character
-	- Displays the command string before executing a command
-	- To exit debug, pressing ESC, then '`', will also do so
+	- 
 
 	PROGRAMMER:
-	- ProgrammerSetup function made for setup of pins
-	- set_CE, set_OE, set_WE functions made, to set (high or low) CE OE and WE pins respectively
-	- OutputData and OutputAddress functions made, to output the value given onto the repective pins
-	- ReadData function made, to read the data on the data pins
-	- Read and Write byte functions made
-	- Continous Read and Write function made for continous data read/write operation
-	- ClearEEPROM function made to write 0xff to all addresses
-	- ClearCheck function made to check if the clear was successful, and give address of the first byte, that isn't 0xff
-	- ReadEEPROM function made to deiplay the EEPROM contents
+	- 
