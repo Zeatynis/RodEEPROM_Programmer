@@ -6,6 +6,8 @@ void _RodEEPROM_ClearScreen()
   	puts("[2J");    // clear screen command
   	putchar(27);
   	puts("[H");     // cursor to home command
+  	putchar(27);
+  	puts("\033[3J");
 }
 
 //	Checks if both input strings are the same
@@ -46,9 +48,13 @@ void _RodEEPROM_CommandExecute(char* commandToExecute)
 			printf("Byte: 0x%2.2x\n", _RodEEPROM_ReadByte(temp));
 		}
 		else
-			puts("\n\nWorked!\n");
+			puts("\n\nClear was successful!\n");
 
 		getchar();
+	}
+	else if(!_RodEEPROM_CheckString(commandToExecute, "exit"))
+	{
+		putchar(0);
 	}
 	else if(!_RodEEPROM_CheckString(commandToExecute, "train!"))
 	{
@@ -87,7 +93,6 @@ void _RodEEPROM_ProcessInput(char c)
 {
 	static unsigned char command[COMMAND_SIZE+1];
 	static uint8_t i;
-
 	if(c == 13) // Carriage Return
 	{
 		putchar('\n');
@@ -106,7 +111,11 @@ void _RodEEPROM_ProcessInput(char c)
 		{
 			--i;
 			if(DEBUG)
-				putchar(127);
+			{
+				putchar(8);
+				putchar(' ');
+				putchar(8);
+			}
 		}
 		command[i] = '\0';
 	}

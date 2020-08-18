@@ -5,11 +5,11 @@
 
 #define COMMAND_SIZE 10
 
-static char StartNormalString[] = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nWelcome to Rod's EEPROM programmer!\nPlease select one of the following commands:\n\nread\nwrite\nclear\n\n";
-static char StartDebugString[] =  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nWelcome to Rod's DEBUG EEPROM programmer!\nPlease select one of the following commands:\n\nread\nwrite\nclear\n\n";
-static char* StartString = StartNormalString;
-
 static uint8_t DEBUG = 1;
+
+static char StartNormalString[] = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nWelcome to Rod's EEPROM programmer!\nPlease select one of the following commands:\n\nread\nwrite\nclear\nexit\n\n";
+static char StartDebugString[] =  "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nWelcome to Rod's DEBUG EEPROM programmer!\nPlease select one of the following commands:\n\nread\nwrite\nclear\nexit\n\n";
+static char* StartString = StartNormalString;
 
 void _RodEEPROM_ClearScreen();
 
