@@ -6,4 +6,7 @@ echo ""
 
 ./compile.sh
 ./upload.sh
-../Build/Serial_Read.bin $1
+../Build/Serial_Read.bin $@
+
+echo "
+Return: "$?

@@ -1,3 +1,9 @@
+// GPL-2.0 License, see LICENCE_GPL-2.0.txt
+/*
+ * _RodEEPROM_Terminal.c - functions for Command Line Interface
+ * Copyright (C) 2020 Rodrigo Amaral  <rodrigo_amaral01@outlook.com>
+ */
+
 #include "_RodEEPROM_Terminal.h"
 
 void _RodEEPROM_ClearScreen()
@@ -72,7 +78,7 @@ void _RodEEPROM_CommandExecute(char* commandToExecute)
 	}
 	else if(!_RodEEPROM_CheckString(commandToExecute, "write"))
 	{
-		
+		_RodEEPROM_WriteByte(0x45da, 0xd7);
 	}
 	else if(!_RodEEPROM_CheckString(commandToExecute, "read"))
 	{

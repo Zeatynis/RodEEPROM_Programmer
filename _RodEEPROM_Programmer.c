@@ -1,3 +1,9 @@
+// GPL-2.0 License, see LICENCE_GPL-2.0.txt
+/*
+ * _RodEEPROM_Programmer.c - functions to Program EEPROM
+ * Copyright (C) 2020 Rodrigo Amaral  <rodrigo_amaral01@outlook.com>
+ */
+
 #include "_RodEEPROM_Programmer.h"
 
 void set_CE(uint8_t state)
@@ -166,7 +172,9 @@ void _RodEEPROM_ClearEEPROM()
 		_RodEEPROM_WriteContinousByte(address, 0xff);
 
 		if(! (address % 10))
-			putchar('\n');
+		{
+			printf(" %3i%%\nAddress:  ", (uint8_t)((100.0/0x7fff)*address));
+		}
 		printf(" %4.4x ", address);
 	}
 	PORTD &= ~(1<<PD7);

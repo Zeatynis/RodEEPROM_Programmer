@@ -1,3 +1,9 @@
+// GPL-2.0 License, see LICENCE_GPL-2.0.txt
+/*
+ * _RodEEPROM_Terminal.c - header for functions for Command Line Interface
+ * Copyright (C) 2020 Rodrigo Amaral  <rodrigo_amaral01@outlook.com>
+ */
+
 #ifndef _RODEEPROM_TEMRINAL_H
 #define _RODEEPROM_TEMRINAL_H
 

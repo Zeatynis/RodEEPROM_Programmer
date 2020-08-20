@@ -1,8 +1,15 @@
+// GPL-2.0 License, see LICENCE_GPL-2.0.txt
+/*
+ * _RodEEPROM_Programmer.c - header for functions to Program EEPROM
+ * Copyright (C) 2020 Rodrigo Amaral  <rodrigo_amaral01@outlook.com>
+ */
+
 #ifndef _RODEEPROM_PROGRAMMER_H
 #define _RODEEPROM_PROGRAMMER_H
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdio.h>
 
 #include "_SteveUART_debug.h"
 

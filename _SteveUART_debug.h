@@ -7,7 +7,8 @@
  *          to initialise redirection of stdout, stderr and stdin to UART0.
  */
 
-/* Some minor changes done to original source code*/
+/* Some changes done to original source code (debug.h)
+   See original in Originals folder*/
 
 #ifndef _STEVEUART_DEBUG_H
 #define _STEVEUART_DEBUG_H
