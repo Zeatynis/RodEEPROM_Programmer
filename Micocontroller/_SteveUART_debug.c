@@ -14,7 +14,7 @@
 
 int _SteveUART_uputchar0(char c, FILE *stream)
 {
-	if (c == '\n') _SteveUART_uputchar0('\r', stream);
+	/* if (c == '\n') _SteveUART_uputchar0('\r', stream); */
 	while (!(UCSR0A & _BV(UDRE0)));
 	UDR0 = c;
 	return c;

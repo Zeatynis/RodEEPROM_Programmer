@@ -1,4 +1,4 @@
-// GPL-2.0 License, see LICENCE_GPL-2.0.txt
+/* GPL-2.0 License, see LICENCE_GPL-2.0.txt */
 /*
  * _RodEEPROM_Programmer.c - functions to Program EEPROM
  * Copyright (C) 2020 Rodrigo Amaral  <rodrigo_amaral01@outlook.com>
@@ -6,17 +6,17 @@
 
 #include "_RodEEPROM_Programmer.h"
 
-void set_CE(uint8_t state)
+void _RodEEPROM_set_CE(uint8_t state)
 {
 	state ? (PORTA |= (1<<PA7)) : (PORTA &= ~(1<<PA7));
 }
 
-void set_OE(uint8_t state)
+void _RodEEPROM_set_OE(uint8_t state)
 {
 	state ? (PORTA |= (1<<PA5)) : (PORTA &= ~(1<<PA5));
 }
 
-void set_WE(uint8_t state)
+void _RodEEPROM_set_WE(uint8_t state)
 {
 	state ? (PORTA |= (1<<PA0)) : (PORTA &= ~(1<<PA0));
 }
@@ -31,10 +31,10 @@ void _RodEEPROM_ProgrammerSetup()
 	DDRB |= ((1<<PB4) | (1<<PB3) | (1<<PB2) | (1<<PB1) | (1<<PB0));
 	DDRA |= ((1<<PA2) | (1<<PA3) | (1<<PA6) | (1<<PA4) | (1<<PA1));
 
-	set_CE(1);
-	set_OE(1);
-	set_WE(1);
-	set_CE(0);
+	_RodEEPROM_set_CE(1);
+	_RodEEPROM_set_OE(1);
+	_RodEEPROM_set_WE(1);
+	_RodEEPROM_set_CE(0);
 }
 
 uint8_t _RodEEPROM_ReadData()
@@ -92,9 +92,9 @@ void _RodEEPROM_WriteByte(uint16_t address, uint8_t data)
 	_RodEEPROM_OutputData(data);
 
 	_delay_us(1);
-	set_WE(0);
+	_RodEEPROM_set_WE(0);
 	_delay_us(1);
-	set_WE(1);
+	_RodEEPROM_set_WE(1);
 	_delay_us(1);
 
 	_RodEEPROM_OutputData(0);
@@ -106,9 +106,9 @@ void _RodEEPROM_WriteContinousByte(uint16_t address, uint8_t data)
 	_RodEEPROM_OutputContinousData(data);
 
 	_delay_us(1);
-	set_WE(0);
+	_RodEEPROM_set_WE(0);
 	_delay_us(1);
-	set_WE(1);
+	_RodEEPROM_set_WE(1);
 	_delay_us(1);
 
 	_RodEEPROM_OutputContinousData(0);
@@ -127,11 +127,11 @@ uint8_t _RodEEPROM_ReadByte(uint16_t address)
 	_RodEEPROM_OutputAddress(address);
 
 	_delay_us(1);
-	set_OE(0);
+	_RodEEPROM_set_OE(0);
 	_delay_us(1);
 
 	data = _RodEEPROM_ReadData();
-	set_OE(1);
+	_RodEEPROM_set_OE(1);
 
 	return data;
 }
@@ -143,13 +143,13 @@ uint8_t _RodEEPROM_ReadContinousByte(uint16_t address)
 	_RodEEPROM_OutputAddress(address);
 
 	_delay_us(1);
-	set_OE(0);
+	_RodEEPROM_set_OE(0);
 	_delay_us(1);
 
 	//DDRC = 0x00;
 	//_delay_ms(DELAY);
 	data = _RodEEPROM_ReadContinousData();
-	set_OE(1);
+	_RodEEPROM_set_OE(1);
 
 	return data;
 }
@@ -218,28 +218,55 @@ uint64_t _RodEEPROM_ClearCheck()
 
 void _RodEEPROM_ReadEEPROM()
 {
-	uint16_t address = 0;
+	unsigned char buffer_of_bytes[N_SHOWN_BYTES]; 
 	uint8_t byte = 0;
 
 	_RodEEPROM_Set_ReadContinousByte();
 
 	PORTD |= (1<<PD7);
+	printf("\n0x%4.4x:   ", 0);
+
 	for(uint16_t address = 0; address <= 0x7fff; address++)
 	{
-		byte = _RodEEPROM_ReadContinousByte(address);
-
-		if(! (address % 32))
+		if(!(address % N_SHOWN_BYTES) && address)
 		{
+			/* Print bytes in hex */
+			for(size_t i = 0; i < N_SHOWN_BYTES/2; i++)
+				printf(" %2.2x", buffer_of_bytes[i]);
+
+			putc('\t', stdout);
+
+			for(size_t i = N_SHOWN_BYTES/2; i < N_SHOWN_BYTES; i++)
+				printf(" %2.2x", (uint8_t)buffer_of_bytes[i]);
+
+			/* Print bytes as chars */
+
+			putc('\t', stdout);
+
+			for(size_t i = 0; i < N_SHOWN_BYTES/2; i++)
+			{
+				if(buffer_of_bytes[i] < 32 || buffer_of_bytes[i] == 127 || buffer_of_bytes[i] == 255)
+					putc('.',stdout);
+				else
+					printf("%c", buffer_of_bytes[i]);
+			}
+
+			putchar(' ');
+
+			for(size_t i = N_SHOWN_BYTES/2; i < N_SHOWN_BYTES; i++)
+			{
+				if(buffer_of_bytes[i] < 32 || buffer_of_bytes[i] == 127 || buffer_of_bytes[i] == 255)
+					putc('.',stdout);
+				else
+					printf("%c", buffer_of_bytes[i]);		
+			}
+
 			printf("\n0x%4.4x:   ", address);
 		}
 
-		if(! ((address + 16) % 32))
-		{
-			putchar('\t');
-		}
-
-		printf(" %2.2x ", byte);
-
+		buffer_of_bytes[address%N_SHOWN_BYTES] = _RodEEPROM_ReadContinousByte(address);
+		/* printf("|%i|",address%N_SHOWN_BYTES); */
 	}
+
 	PORTD &= ~(1<<PD7);
 }

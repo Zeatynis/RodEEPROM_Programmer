@@ -1,17 +1,13 @@
-// GPL-2.0 License, see LICENCE_GPL-2.0.txt
+/* GPL-2.0 License, see LICENCE_GPL-2.0.txt */
 /*
- * _RodSerial_ProcessArguments.c - functions to Process Command line arguments
+ * _RodSerial_Interface_ProcessArguments.c - functions to Process Command line arguments
  * Copyright (C) 2020 Rodrigo Amaral  <rodrigo_amaral01@outlook.com>
  */
 
-#include "_RodSerial_ProcessArguments.h"
+#include "_RodSerial_Interface.h"
+#include "_RodSerial_Interface_Internal.h"
 
-int RETURN_ERROR = 0;
-char* PortString = NULL;
-char* FileString = NULL;
-
-//	Checks if both input strings are the same
-uint8_t _RodSerial_CheckString(char* string1, char* string2)
+uint8_t _RodSerial_Arguments_CheckString(char* string1, char* string2)
 {
 	size_t j = 0;
 	while(1)
@@ -26,14 +22,14 @@ uint8_t _RodSerial_CheckString(char* string1, char* string2)
 	return 1;
 }
 
-uint8_t _RodSerial_ProcessArguments(int argc, char** argv)
+uint8_t _RodSerial_Arguments_ProcessArguments(int argc, char** argv)
 {
 	/*	Processing arguments	*/
 	uint8_t args_count = 1;
 	while(argc > args_count)
 	{
-		//	-p to specify serial port
-		if(!_RodSerial_CheckString(argv[args_count], "-p"))
+		/*	-p to specify serial port */
+		if(!_RodSerial_Arguments_CheckString(argv[args_count], "-p"))
 		{
 			static uint8_t done_p;
 
@@ -61,8 +57,8 @@ uint8_t _RodSerial_ProcessArguments(int argc, char** argv)
 
 			done_p = 1;
 		}
-		// -f to specify the file name with binary data to be uploaded to the EEPROM
-		else if(!_RodSerial_CheckString(argv[args_count], "-f"))
+		/*/ -f to specify the file name with binary data to be uploaded to the EEPROM */
+		else if(!_RodSerial_Arguments_CheckString(argv[args_count], "-f"))
 		{
 			static uint8_t done_f;
 
@@ -89,7 +85,7 @@ uint8_t _RodSerial_ProcessArguments(int argc, char** argv)
 
 			done_f = 1;
 		}
-		else if(!_RodSerial_CheckString(argv[args_count], "--train"))
+		else if(!_RodSerial_Arguments_CheckString(argv[args_count], "--train"))
 		{
 			static uint8_t done_train;
 
@@ -127,4 +123,9 @@ uint8_t _RodSerial_ProcessArguments(int argc, char** argv)
 	}
 
 	return 0;
+}
+
+int _RodSerial_Arguments_ERROR()
+{
+	return RETURN_ERROR;
 }

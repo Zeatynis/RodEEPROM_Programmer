@@ -20,10 +20,10 @@
 
 #define DEBUG_BAUD 57600
 
-int _SteveUART_uputchar0(char c, FILE *stream);
+extern int _SteveUART_uputchar0(char c, FILE *stream);
 
-int _SteveUART_ugetchar0(FILE *stream);
+extern int _SteveUART_ugetchar0(FILE *stream);
 
-void _SteveUART_init_debug_uart0(void);
+extern void _SteveUART_init_debug_uart0(void);
 
-#endif // _STEVEUART_DEBUG_H
+#endif /* _STEVEUART_DEBUG_H */
