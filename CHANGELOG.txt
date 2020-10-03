@@ -1,0 +1,48 @@
+Rod's EEPROM Programmer, with Atmel microcontroller (Atmega 164, 324, 644, 1284)
+
+V 1.1.0:
+
+	PC Serial Comms:
+	-
+
+	PC Interface:
+	- "-s" command line argument can be used to specify a text file, with hex to be translated to a binary file
+	- "-o" specifies the name of the binary file, translated from the source file
+	- "-b" specifies a binary file to be programmed directly, if no source file to be translated has been specified
+
+	Micro Serial Comms:
+	- !debug command has been removed
+
+	Micro EEPROM Programmer:
+	- Now using SEND() function to symbolize the functions that can be changed with DEBUG, instead of redefining putchar()
+	- Fixed bug where programmer skipped programming a few first bytes
+
+	Communication Protocol:
+	- Added characters support, for uploading the binary file data to the EEPROM (check below)
+
+	General / Others:
+	- ** Added Rod's mini assembler support **
+	- Re-shuffled some code
+	- fixed minor bugs
+
+
+Communication Protocol, Special Characters
+/*
+	Special Characters Used, and their functionalities in this Communication Protocol
+
+	14 : SO  : Shift-Out  			-> Symbolizes Right Arrow Key
+	15 : SI  : Shift-In   			-> Symbolizes Left Arrow Key
+
+	5  : ENQ : Enquiry    			-> Character used for PC to start communication with micro, micro waits for this character to be sent
+	6  : ACK : Aknowledge 			-> Character sent by micro, to confirm start of communication with PC, after PC has sent a ENQ
+	4  : EOT : End of Transmission  -> Character used by both PC and micro, to end communication and stop all processes by both. Micro will send this signal and shut off, by using the exit command
+	25 : EM  : End of Medium		-> Character used by PC or micro to symbolize end of communication with micro, to start communication again the micro shall wait for another ENQ signal. PC will send this signal by using Ctrl + C.
+	8  : BS  : Backspace			-> Character used to symbolize the backspace key, and its functionality.
+
+	3  : ETX : End of Text 			-> Character used by micro, to tell the PC to clear the terminal.
+
+	Binary file upload
+	17 : DC1 : Device Control 1		-> Character used by micro, to ask for binary file to be programmed
+	6  : ACK : Aknowledge			-> Character used by PC to symbolize a binary file to be uploaded has been specified, and it can start transmitting the data.
+	21 : NAK : Negative Aknowledge	-> Character used by PC to symbolize a binary file has not been specified
+*/
