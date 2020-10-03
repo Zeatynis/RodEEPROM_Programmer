@@ -1,4 +1,5 @@
 /* GPL-2.0 License, see LICENCE_GPL-2.0.txt */
+/* https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html */
 /*
  * _RodSerial_Interface.c - functions for the Serial Interface
  * Copyright (C) 2020 Rodrigo Amaral  <rodrigo_amaral01@outlook.com>
@@ -6,6 +7,8 @@
 
 #include "_RodSerial_Interface.h"
 #include "_RodSerial_Interface_Internal.h"
+
+uint8_t CLEAR_OR_NOCLEAR = NO_CLEAR;
 
 struct termios serial_io;
 struct termios stdio;
@@ -18,8 +21,11 @@ uint8_t cursor_location = 0;
 uint8_t max_cursor = 0;
 
 char* PortString = NULL;
-char* FileString = NULL;
-int RETURN_ERROR = 0;
+
+char* source_file_string = NULL;
+char* output_file_string = "NO_NAME_GIVEN.bin";;
+
+char * binary_file_string = NULL;
 
 void _RodSerial_Interface_Setup()
 {
@@ -203,10 +209,14 @@ uint8_t _RodSerial_Interface_SerialInput()
 			{
 				_RodSerial_Interface_ConsoleClearScreen();
 			}
-			else if(c == 4)
+			else if(c == 4) /* EOT */
 			{
 				puts("EEPROM Programmer turned off!\r");
 				return 1;
+			}
+			else if(c == 17) /* DC1, Used to symbolize start of binary file transfer*/
+			{
+				_RodSerial_Interface_SendBinaryFile(CLEAR_OR_NOCLEAR);
 			}
 			else
 			{
@@ -256,7 +266,7 @@ uint8_t _RodSerial_Interface_SerialOutput()
 			else if(c == 27) /* ESC */
 			{
 				read(STDIN_FILENO,&c,1);
-				if(c == 91) /* if '[' */
+				if(c == 91) /* '[' */
 				{
 					read(STDIN_FILENO,&c,1);
 
@@ -331,22 +341,99 @@ uint8_t _RodSerial_Interface_SerialOutput()
 	return 0;
 }
 
-uint8_t _RodSerial_Interface_Debug()
+uint8_t _RodSerial_Interface_SendBinaryFile()
 {
-	if(read(STDIN_FILENO,&c,1)>0)
-	{
-		printf("PC Sent:     -> |%i|\r\n",c);
-		write(tty_FILENO,&c,1);
-	}
+	puts("\nStarting...\n\r");
+	size_t file_size = 0;
 
-	if(read(tty_FILENO,&c,1)>0)
-	{
-		printf("PC Received: -> |%i|\r\n\n",c);
-		//write(STDOUT_FILENO,&c,1);
-	}
+	/* Open Binary file and perform checks */
+	FILE* file = fopen(binary_file_string, "r");
 
-	if(c == 3)
+	if(!file)
+	{
+		c = 21; write(tty_FILENO,&c,1); /* NAK */
+		puts("\nCouldn't open Binary File!\n");
 		return 1;
+	}
 
-	return 0;	
+	fseek(file, 0, SEEK_END);
+	file_size = ftell(file);
+
+	printf("FileSize: %zu\n", file_size);
+
+	if(file_size > EEPROM_SIZE)
+	{
+		c = 21; write(tty_FILENO,&c,1); /* NAK */
+		puts("\nBinary File Size too big!\n");
+		return 1;
+	}
+
+	rewind(file);
+
+	/* Send Aknowledge to start data transfer */
+	c = 6; write(tty_FILENO,&c,1); /* ACK */
+
+	if(CLEAR_OR_NOCLEAR)
+	{
+		/* if CLEAR */
+		/* First Send 4 bytes with file size, LSB first */
+
+		c = (EEPROM_SIZE & 0xff); write(tty_FILENO,&c,1); /* LSB first */
+		c = ((EEPROM_SIZE & 0xff00) >> 8); write(tty_FILENO,&c,1);
+		c = ((EEPROM_SIZE & 0xff0000) >> 16); write(tty_FILENO,&c,1);
+		c = ((EEPROM_SIZE & 0xff000000) >> 24); write(tty_FILENO,&c,1); /* MSB last */
+
+		for(size_t i = 0; i < file_size; i++)
+		{
+			c = fgetc(file); write(tty_FILENO,&c,1);
+			while(read(tty_FILENO,&c,1)<1) { }
+		}
+
+		for(size_t i = file_size; i < EEPROM_SIZE - file_size; i++)
+		{
+			c = 0xff;  write(tty_FILENO,&c,1);
+			while(read(tty_FILENO,&c,1)<1) { }
+		}
+	}
+	else
+	{
+		/* First Send 4 bytes with file size, LSB first */
+		c = (file_size & 0xff); write(tty_FILENO,&c,1); /* LSB first */
+		c = ((file_size & 0xff00) >> 8); write(tty_FILENO,&c,1);
+		c = ((file_size & 0xff0000) >> 16); write(tty_FILENO,&c,1);
+		c = ((file_size & 0xff000000) >> 24); write(tty_FILENO,&c,1); /* MSB last */	
+
+		/* then send data */
+		for(size_t i = 0; i < file_size; i++)
+		{
+			c = fgetc(file);  write(tty_FILENO,&c,1);
+			while(read(tty_FILENO,&c,1)<1) { }
+			printf("\rProgress: %5.2f%%\n", ((100.0/file_size)*i) );
+		}
+	}
+
+	puts("\nFinished!\n");
+	return 0;
 }
+
+#ifdef DEBUG
+	uint8_t _RodSerial_Interface_Debug()
+	{
+		if(read(STDIN_FILENO,&c,1)>0)
+		{
+			printf("PC Sent:     -> |%i|\r\n",c);
+			write(tty_FILENO,&c,1);
+		}
+
+		if(read(tty_FILENO,&c,1)>0)
+		{
+			printf("PC Received: -> |%i|\r\n\n",c);
+			/* write(STDOUT_FILENO,&c,1); */
+		}
+
+		if(c == 3)
+			return 1;
+
+		return 0;	
+	}
+#endif

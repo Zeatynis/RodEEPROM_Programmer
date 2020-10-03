@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <avr/io.h>
 
-#define DEBUG_BAUD 57600
+#define DEBUG_BAUD 57600ULL /* */
 
 extern int _SteveUART_uputchar0(char c, FILE *stream);
 

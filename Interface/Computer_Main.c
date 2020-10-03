@@ -1,16 +1,23 @@
 /* GPL-2.0 License, see LICENCE_GPL-2.0.txt */
+/* https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html */
 /*
  * Computer_Main.c - Main for EEPROM Serial Interface on PC side
  * Copyright (C) 2020 Rodrigo Amaral  <rodrigo_amaral01@outlook.com>
  */
 
 #include "_RodSerial_Interface.h"
+#include "_RodTools_Arguments.h"
+
+#define N_BYTES_BIN 8
+#define N_BYTES_HEX 32
+
+uint8_t RETURN_ERROR = 0;
  
 int main(int argc, char** argv)
 {
-	if(_RodSerial_Arguments_ProcessArguments(argc, argv))
+	if(_RodTools_Arguments_ProcessArguments(argc, argv))
 	{
-		return _RodSerial_Arguments_ERROR();
+		return RETURN_ERROR;
 	}
 
 	_RodSerial_Interface_Setup();
@@ -45,7 +52,7 @@ int main(int argc, char** argv)
 	_RodSerial_Interface_Close();
 
 	END:
-	return EXIT_SUCCESS;
+	return RETURN_ERROR;
 }
 
 /*

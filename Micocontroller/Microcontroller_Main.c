@@ -1,11 +1,12 @@
 /* GPL-2.0 License, see LICENCE_GPL-2.0.txt */
+/* https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html */
 /*
  * Microcontroller_Main.c - main for EEPROM Programmer
  * Copyright (C) 2020 Rodrigo Amaral  <rodrigo_amaral01@outlook.com>
  */
 
 #include "_SteveUART_debug.h"
-#include "_RodEEPROM_Terminal.h"
+#include "_RodEEPROM_SerialComms.h"
 #include "_RodEEPROM_Programmer.h"
 
 int main()

@@ -1,12 +1,25 @@
 /* GPL-2.0 License, see LICENCE_GPL-2.0.txt */
+/* https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html */
 /*
- * _RodEEPROM_Terminal.c - functions for Command Line Interface
+ * _RodEEPROM_SerialComms.c - functions for Command Line Interface
  * Copyright (C) 2020 Rodrigo Amaral  <rodrigo_amaral01@outlook.com>
  */
 
-#include "_RodEEPROM_Terminal.h"
+#include "_RodEEPROM_SerialComms.h"
 
-uint8_t _RodEEPROM_EstablishSerialConnection()
+#if (FILENAME_MAX < 4096)
+	#define FILENAME_PATH_MAXCHARS FILENAME_MAX
+#else
+	#define FILENAME_PATH_MAXCHARS 4096
+#endif
+
+#if (NAME_MAX < 255)
+	#define FILENAME_MAXCHARS NAME_MAX
+#else
+	#define FILENAME_MAXCHARS 255
+#endif
+
+void _RodEEPROM_EstablishSerialConnection()
 {
 	unsigned char c = 'd';
 	PORTD |= (1<<PD7);
@@ -14,6 +27,7 @@ uint8_t _RodEEPROM_EstablishSerialConnection()
 	while(1)
 	{
 		c = getchar();
+
 		PORTD ^= (1<<PD7);
 		_delay_ms(500);
 
@@ -21,13 +35,13 @@ uint8_t _RodEEPROM_EstablishSerialConnection()
 			break;
 	}
 
-	putc(6, stdout); /* ACK Aknowledge */
+	putchar(6); /* ACK Aknowledge */
 	PORTD &= ~(1<<PD7);
 }
 
 void _RodEEPROM_ClearScreen()
 {
-	putc(3, stdout);
+	putchar(3);
 }
 
 uint8_t _RodEEPROM_CheckString(char* string1, char* string2)
@@ -82,30 +96,8 @@ uint8_t _RodEEPROM_CommandExecute(char* commandToExecute)
 	}
 	else if(!_RodEEPROM_CheckString(commandToExecute, "write"))
 	{
-		for(size_t i = 0; i<32; i++)
-		{
-			_RodEEPROM_WriteByte(0x4580 + i, 33 + i);
-		}
-
-		_RodEEPROM_WriteByte(0x45da, 0x52);
-		_RodEEPROM_WriteByte(0x45db, 0x4f);
-		_RodEEPROM_WriteByte(0x45dc, 0x44);
-
-		_RodEEPROM_WriteByte(0x45dd, 0x20);
-
-		_RodEEPROM_WriteByte(0x45de, 0x49);
-		_RodEEPROM_WriteByte(0x45df, 0x53);
-
-		_RodEEPROM_WriteByte(0x45e0, 0x20);
-
-		_RodEEPROM_WriteByte(0x45e1, 0x47);
-		_RodEEPROM_WriteByte(0x45e2, 0x52);
-		_RodEEPROM_WriteByte(0x45e3, 0x45);
-		_RodEEPROM_WriteByte(0x45e4, 0x41);
-		_RodEEPROM_WriteByte(0x45e5, 0x54);
-
-		_RodEEPROM_WriteByte(0x45e6, 0x21);
-		_RodEEPROM_WriteByte(0x45e7, 0xff);
+		_RodEEPROM_GetBinFile();
+		getchar();
 	}
 	else if(!_RodEEPROM_CheckString(commandToExecute, "read"))
 	{
@@ -166,7 +158,7 @@ uint8_t _RodEEPROM_ProcessInput(char c)
 			else
 				c = '\a';
 
-			putchar(c);
+			SEND(c);
 		}
 		else if(c == 14) /* Right Arrow Ley */
 		{
@@ -175,7 +167,7 @@ uint8_t _RodEEPROM_ProcessInput(char c)
 			else
 				c = '\a';
 
-			putchar(c);
+			SEND(c);
 		}
 		else if(c == 15)
 		{
@@ -184,7 +176,7 @@ uint8_t _RodEEPROM_ProcessInput(char c)
 			else
 				c = '\a';
 
-			putchar(c);
+			SEND(c);
 		}
 		else if(c == 4) /* EOT */
 		{
@@ -216,7 +208,7 @@ uint8_t _RodEEPROM_ProcessInput(char c)
 		else
 			c = '\a';
 
-		putchar(c);
+		SEND(c);
 	}
 	#ifdef DEBUG
 		else if(c == '`')
@@ -234,12 +226,12 @@ uint8_t _RodEEPROM_ProcessInput(char c)
 		else
 			c = '\a';
 
-		putchar(c);
+		SEND(c);
 	}
 	else
 	{
 		c = '\a';
-		putchar(c);
+		SEND(c);
 	} 
 
 	if(char_count > max_chars)
@@ -248,7 +240,7 @@ uint8_t _RodEEPROM_ProcessInput(char c)
 	#ifdef DEBUG
 		printf("Aftr char_count-> |%i|\n",char_count);
 		printf("Aftr max_chars -> |%i|\n",char_count);
-		putc('\n', stdout);
+		putchar('\n');
 	#endif
 
 	return 0;
