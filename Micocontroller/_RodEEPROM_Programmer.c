@@ -29,7 +29,7 @@ void _RodEEPROM_ProgrammerSetup()
 	DDRA |= (1<<PA7) | (1<<PA5) | (1<<PA0);
 
 	DDRD |= ((1<<PD6) | (1<<PD5) | (1<<PD4) | (1<<PD3) | (1<<PD2));
-	DDRB |= ((1<<PB4) | (1<<PB3) | (1<<PB2) | (1<<PB1) | (1<<PB0));
+	DDRB |= ((1<<PB5) | (1<<PB4) | (1<<PB3) | (1<<PB2) | (1<<PB1) | (1<<PB0));
 	DDRA |= ((1<<PA2) | (1<<PA3) | (1<<PA6) | (1<<PA4) | (1<<PA1));
 
 	_RodEEPROM_set_CE(1);
@@ -85,10 +85,30 @@ void _RodEEPROM_OutputAddress(uint16_t address)
 	(address&0x2000) ? (PORTA |= (1<<PA1)) : (PORTA &= ~(1<<PA1));
 
 	(address&0x4000) ? (PORTB |= (1<<PB0)) : (PORTB &= ~(1<<PB0));
+	(address&0x8000) ? (PORTB |= (1<<PB5)) : (PORTB &= ~(1<<PB5));
 }
 
 void _RodEEPROM_WriteByte(uint16_t address, uint8_t data)
 {
+	_RodEEPROM_OutputAddress(0x5555);
+	_RodEEPROM_OutputContinousData(0xAA);
+	_RodEEPROM_set_WE(0);
+	_delay_us(1);
+	_RodEEPROM_set_WE(1);
+
+	_RodEEPROM_OutputAddress(0x2AAA);
+	_RodEEPROM_OutputContinousData(0x55);
+	_RodEEPROM_set_WE(0);
+	_delay_us(1);
+	_RodEEPROM_set_WE(1);
+
+	_RodEEPROM_OutputAddress(0x5555);
+	_RodEEPROM_OutputContinousData(0xA0);
+	_RodEEPROM_set_WE(0);
+	_delay_us(1);
+	_RodEEPROM_set_WE(1);
+
+
 	_RodEEPROM_OutputAddress(address);
 	_RodEEPROM_OutputData(data);
 
@@ -103,6 +123,24 @@ void _RodEEPROM_WriteByte(uint16_t address, uint8_t data)
 
 void _RodEEPROM_WriteContinousByte(uint16_t address, uint8_t data)
 {
+	_RodEEPROM_OutputAddress(0x5555);
+	_RodEEPROM_OutputContinousData(0xAA);
+	_RodEEPROM_set_WE(0);
+	_delay_us(1);
+	_RodEEPROM_set_WE(1);
+
+	_RodEEPROM_OutputAddress(0x2AAA);
+	_RodEEPROM_OutputContinousData(0x55);
+	_RodEEPROM_set_WE(0);
+	_delay_us(1);
+	_RodEEPROM_set_WE(1);
+	
+	_RodEEPROM_OutputAddress(0x5555);
+	_RodEEPROM_OutputContinousData(0xA0);
+	_RodEEPROM_set_WE(0);
+	_delay_us(1);
+	_RodEEPROM_set_WE(1);
+
 	_RodEEPROM_OutputAddress(address);
 	_RodEEPROM_OutputContinousData(data);
 

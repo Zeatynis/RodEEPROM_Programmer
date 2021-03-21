@@ -18,7 +18,7 @@
 
 #define MAX_CHARACTERS 20
 
-#define EEPROM_SIZE 32768
+#define EEPROM_SIZE 65536
 
 #define NO_CLEAR 0
 #define CLEAR 1
